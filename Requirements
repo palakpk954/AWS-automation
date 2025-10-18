@@ -1,0 +1,136 @@
+1. requirements.txt
+This is the primary dependency file that lists all Python libraries required for your project. It enables others to set up the same environment using a single command:
+
+bash
+pip install -r requirements.txt
+Example:
+
+text
+opencv-python==4.10.0.84
+mediapipe==0.10.15
+boto3==1.35.35
+cvzone==1.6.1
+numpy==1.26.4
+You can generate it automatically from your virtual environment using:
+
+bash
+pip freeze > requirements.txt
+This ensures reproducibility by locking in tested package versions.​
+
+2. .env.example
+This file stores environment variables for AWS and system configuration securely.
+Never commit real secrets — instead, create a template with placeholder values.
+Used in combination with python-dotenv or system-level environment exporting.
+
+Example .env.example:
+
+text
+AWS_ACCESS_KEY_ID=your-access-key
+AWS_SECRET_ACCESS_KEY=your-secret-key
+AWS_DEFAULT_REGION=us-east-1
+AWS_SNS_TOPIC_ARN=arn:aws:sns:us-east-1:123456789012:GestureNotifications
+AWS_AMI_ID=ami-0abcdef1234567890
+INSTANCE_TYPE=t2.micro
+Developers then copy it to a real .env file and personalize the values locally:
+
+bash
+cp .env.example .env
+3. config/settings.json
+Stores static application configuration data used to control runtime parameters, such as camera input, confidence thresholds, and AWS service preferences.
+
+Example:
+
+json
+{
+  "camera_index": 0,
+  "min_detection_confidence": 0.7,
+  "aws_region": "us-east-1",
+  "sns_topic_arn": "arn:aws:sns:us-east-1:123456789012:GestureNotifications",
+  "instance_type": "t2.micro",
+  "ami_id": "ami-0abcdef1234567890"
+}
+Your application (in main.py or aws_controller.py) can load this file dynamically:
+
+python
+import json
+
+with open("config/settings.json", "r") as config_file:
+    settings = json.load(config_file)
+
+4. .gitignore
+Avoid committing files that expose credentials, temporary builds, or unnecessary binaries.
+
+Example:
+
+text
+# Python caches
+__pycache__/
+*.pyc
+
+# Environment
+.env
+venv/
+.venv/
+
+# VSCode and IDE
+.vscode/
+.idea/
+
+# AWS credentials
+.aws/
+credentials.json
+
+# Datasets or models
+data/
+models/
+emphasize the importance of using .gitignore with requirements and environment files to maintain security and cleanliness.
+​
+
+5. environment.yml 
+If you use Conda, this file replicates environments across machines more precisely.
+
+Example:
+
+text
+name: gesture-env
+channels:
+  - defaults
+  - conda-forge
+dependencies:
+  - python=3.10
+  - pip
+  - pip:
+    - opencv-python==4.10.0.84
+    - mediapipe==0.10.15
+    - boto3==1.35.35
+    - cvzone==1.6.1
+    - python-dotenv==1.0.1
+
+
+6. AWS IAM Policy Example
+Attach this policy to your IAM user or role for minimal AWS access:
+
+json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "ec2:RunInstances",
+        "ec2:TerminateInstances",
+        "sns:Publish"
+      ],
+      "Resource": "*"
+    }
+  ]
+}
+Summary Table
+
+File Name	Purpose	Key Benefit
+requirements.txt	Defines dependencies	Ensures environment consistency ​
+.env.example	Stores credentials safely	Separates secrets from code
+config/settings.json	Contains runtime configuration	Simplifies updates to app params
+.gitignore	Excludes sensitive/unnecessary files	Prevents security leaks
+environment.yml	Conda environment file	Enables cross-platform reproducibility
+IAM Policy JSON	Defines AWS permissions	Secures resource access
