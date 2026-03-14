@@ -1,7 +1,4 @@
-# AWS-automation
-Here is a well-structured **README.md** for your **Hand Gesture Detection with AWS Automation** project. It follows AWS documentation conventions and includes deployment and usage details.
 
-***
 
 # Hand Gesture Detection with AWS Automation
 
